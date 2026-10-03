@@ -5,13 +5,15 @@ change.
 
 ## Current Phase
 
-- Phase 2: Editor
+- Phase 3: Authentication
 
 ## Current Goal
 
-- Implement `context/feature-specs/02-editor.md`: the base editor chrome (top navbar, floating project sidebar, dialog pattern) reused by every later chapter.
+- Implement `context/feature-specs/03-auth.md`: Clerk sign-up / sign-in / sign-out, route protection via `proxy.ts`, dark-themed auth pages, and auth state in the editor navbar.
 
 ## Completed
+
+- 03 Auth — Clerk (`@clerk/nextjs` v7 + `@clerk/ui`). `ClerkProvider` sits inside `<body>` in `app/layout.tsx` with `lib/clerk-appearance.ts` (Clerk `dark` theme, variables mapped to the `globals.css` tokens via `var(--…)`, no hardcoded colors). `proxy.ts` protects every route except the paths in `NEXT_PUBLIC_CLERK_SIGN_IN_URL` / `NEXT_PUBLIC_CLERK_SIGN_UP_URL` (and their sub-paths); matcher includes `/__clerk/:path*`. `/` redirects to `/editor` when signed in, otherwise to sign-in. Auth pages live in the `app/(auth)` route group: a 50/50 split on `lg+` (left `bg-surface` panel with logo, headline, description, three icon + title + description feature rows and a copyright footer; right `bg-page` with the centered Clerk form), form-only on small screens. The left panel follows a reference design supplied by the user and replaces the spec's text-only feature list. Clerk renders Geist at a 1rem base with full-width "Continue with …" social buttons stacked one per row. `UserButton` sits in the editor navbar's right section. `tsc`, `npm run lint` and `npm run build` pass; unauthenticated `/` and `/editor` return 307 to `/sign-in`, auth pages return 200.
 
 - 02 Editor — `components/editor/editor-navbar.tsx` (h-14 three-column bar, `PanelLeftOpen`/`PanelLeftClose` toggle, Ghost AI home link in the center, empty right section), `components/editor/project-sidebar.tsx` (absolute overlay that slides in from the left via `translate-x`, `inert` when closed, Projects header + close, My/Shared Projects tabs with empty states, full-width `New Project` button), `components/editor/dialog.tsx` (`EditorDialog`: fixed 520×420 frame with header/content/footer slots, slide + fade transition). Composed in `components/editor/editor-shell.tsx`, which `app/editor/layout.tsx` wraps around every `/editor` route's content; `New Project` opens a placeholder dialog. `tsc`, `npm run lint` and `npm run build` pass.
 - 01 Design System — shadcn/ui initialized (style `base-nova`, built on `@base-ui/react`); added Button, Input, Card, Dialog, Tabs, Textarea, ScrollArea in `components/ui/`; installed `lucide-react`; `lib/utils.ts` exports `cn()`; `app/globals.css` holds the dark-only token palette from `ui-context.md`; `app/page.tsx` demos every component. `npm run build` and `npm run lint` pass.
@@ -22,6 +24,7 @@ change.
 
 ## Next Up
 
+- Manually verify the full sign-up → sign-in → sign-out flow in the browser with a real test account.
 - Next feature spec (not yet written).
 
 ## Open Questions
@@ -37,6 +40,10 @@ change.
 - Ghost AI Tailwind tokens (`@theme inline`): `bg-page`, `bg-surface`, `bg-elevated`, `bg-subtle`, `border-surface-border`, `border-surface-border-subtle`, `text-copy-{primary,secondary,muted,faint,ai}`, `brand`, `brand-dim`, `ai`, `state-{error,success,warning}`. The page background token is `page`, not `base`, because `--color-base` overrides Tailwind's `text-base` font-size utility with a color.
 - The navbar and sidebar live in `app/editor/layout.tsx` (via the client `EditorShell`, which owns sidebar/dialog state and renders `children` inside `<main>`), so they persist across editor routes. The layout and pages stay server components. The sidebar is positioned inside a `relative` content area below the navbar, so it overlays the canvas without pushing it.
 - `EditorDialog` wraps the shadcn/Base UI `Dialog` rather than reimplementing a modal, so focus trapping, Escape-to-close, scroll lock, and focus restoration come from Base UI. It is controlled via `isOpen` / `onClose`; actions are passed through the `footer` slot.
+- Route protection is two-layered: `proxy.ts` (Next 16's renamed `middleware.ts`) protects everything except the auth paths, and protected layouts/pages also call `auth.protect()` / `auth()` (e.g. `app/editor/layout.tsx`). Clerk's `createRouteMatcher` is deprecated in v7, so public paths are matched with a plain pathname check built from the sign-in/sign-up env vars.
+- Clerk appearance overrides stay minimal: theme variables, `options.socialButtonsVariant`, one `elements.socialButtons` grid override, and the `socialButtonsBlockButtonManyInView` string in `lib/clerk-localization.ts`. `colorBorder` uses `--text-primary` because Clerk draws borders at ~7–11% alpha of that colour; the dark `--border-default` token came out invisible.
+- Clerk env vars: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in`, `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up`. The sign-in/up route folders (`app/(auth)/sign-in/[[...sign-in]]`, `app/(auth)/sign-up/[[...sign-up]]`) must match these values. After sign-in Clerk returns to `/`, which redirects to `/editor`; no extra redirect env vars are used.
+- The `app/page.tsx` design-system demo was replaced by the auth redirect.
 - Radius scale is applied at call sites (`rounded-2xl` on cards, `rounded-3xl` on dialogs) rather than in `components/ui/*`.
 
 ## Session Notes

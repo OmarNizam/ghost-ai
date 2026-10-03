@@ -6,6 +6,8 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
+<!-- END:nextjs-agent-rules -->
+
 ## Application Building Context
 
 This section provides context for building applications using this version of Next.js. It includes guidelines, best practices, and considerations to keep in mind while developing your application.
@@ -21,5 +23,3 @@ Read the following guidelines files in order before implementing or making ant a
 Update `context/progress-tracker.md` after each meaningful implementation, change, or milestone in the project.
 
 If implementation changes the architecture, project structure, or any significant aspect of the application, ensure that `context/progress-tracker.md` is updated accordingly to reflect these changes before continue.
-
-<!-- END:nextjs-agent-rules -->
