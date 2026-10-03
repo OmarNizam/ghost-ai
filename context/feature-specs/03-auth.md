@@ -22,8 +22,8 @@ import { dark } from "@clerk/ui/themes";
 <ClerkProvider appearance={{ theme: dark }}>{children}</ClerkProvider>;
 ```
 
-Override the default appearance by providing the `appearance` prop to the `ClerkProvider`. Overriding Clerk apperance
-variables using the app's existing CSS variables. Do not hradcode colors or other appearance settings directly.
+Override the default appearance by providing the `appearance` prop to the `ClerkProvider`. Override Clerk appearance
+variables using the app's existing CSS variables. Do not hardcode colors or other appearance settings directly.
 
 ### Sign-in and Sign-up pages
 
@@ -39,7 +39,7 @@ Customize the appearance of the sign-in and sign-up pages by using the `appearan
 - no feature cards.
 - no scroll-heavy layouts; keep content concise and focused on the sign-in form.
 
-Keep the layout minmal and professional.
+Keep the layout minimal and professional.
 
 ## Implementation Details
 
