@@ -21,7 +21,7 @@ export function ProjectSidebar({ isOpen, onClose, onNewProject }: ProjectSidebar
       aria-hidden={!isOpen}
       inert={!isOpen}
       className={cn(
-        "absolute inset-y-0 left-0 z-40 flex w-72 flex-col border-r border-surface-border bg-surface shadow-2xl transition-transform duration-300 ease-out motion-reduce:transition-none",
+        "absolute inset-y-0 left-0 z-40 flex w-72 max-w-full flex-col border-r border-surface-border bg-surface shadow-2xl transition-transform duration-300 ease-out motion-reduce:transition-none",
         isOpen ? "translate-x-0" : "-translate-x-full",
       )}
     >

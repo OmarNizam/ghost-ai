@@ -37,7 +37,7 @@ export function EditorDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         showCloseButton={false}
-        className="flex h-[420px] w-[520px] max-w-[calc(100%-2rem)] flex-col gap-0 rounded-3xl border border-surface-border bg-elevated p-0 duration-200 sm:max-w-[520px] data-open:slide-in-from-bottom-4 data-closed:slide-out-to-bottom-4"
+        className="flex h-[420px] max-h-[calc(100dvh-2rem)] w-[520px] max-w-[calc(100%-2rem)] flex-col gap-0 rounded-3xl border border-surface-border bg-elevated p-0 duration-200 sm:max-w-[520px] data-open:slide-in-from-bottom-4 data-closed:slide-out-to-bottom-4"
       >
         <div className="flex items-start justify-between gap-4 border-b border-surface-border px-6 py-4">
           <div className="flex flex-col gap-1">

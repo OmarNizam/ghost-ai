@@ -1,4 +1,4 @@
-Read the `AGENTS.md` file before staring.
+Read the `AGENTS.md` file before starting.
 
 ## Current Phase
 
@@ -7,8 +7,8 @@ Read the `AGENTS.md` file before staring.
 ## Current Goal
 
 - Implement the editor feature as specified in the design and requirements documents.
-- We need the base chrome components that frame every editor screen - the top navbar and left sidbar shell.
-  These will be reused and extyended in every chapter that follows.
+- We need the base chrome components that frame every editor screen - the top navbar and left sidebar shell.
+  These will be reused and extended in every chapter that follows.
 
 ### Editor Navbar
 
@@ -33,7 +33,7 @@ The project sidebar will include the following elements:
 - slides in and out smoothly when toggled
 - slides in from the left
 - accepts `isOpen` prop.
-- header seaction with `Projects` title + close button.
+- header section with `Projects` title + close button.
 - shadcn `Tabs`:
   - My Projects
   - Shared Projects
@@ -54,7 +54,7 @@ The project sidebar will include the following elements:
 - slides in and out smoothly when toggled.
 - should be accessible, including focus trapping and keyboard navigation.
 
-Dont build actual dialog functionality yet; focus on the structure and styling.
+Don't build actual dialog functionality yet; focus on the structure and styling.
 
 ### Check when done
 
