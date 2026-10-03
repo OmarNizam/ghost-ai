@@ -5,14 +5,15 @@ change.
 
 ## Current Phase
 
-- Phase 1: Design System
+- Phase 2: Editor
 
 ## Current Goal
 
-- Implement `context/feature-specs/01-design-system.md` (shadcn/ui setup, UI primitives, `cn()` helper, dark theme).
+- Implement `context/feature-specs/02-editor.md`: the base editor chrome (top navbar, floating project sidebar, dialog pattern) reused by every later chapter.
 
 ## Completed
 
+- 02 Editor — `components/editor/editor-navbar.tsx` (h-14 three-column bar, `PanelLeftOpen`/`PanelLeftClose` toggle, Ghost AI home link in the center, empty right section), `components/editor/project-sidebar.tsx` (absolute overlay that slides in from the left via `translate-x`, `inert` when closed, Projects header + close, My/Shared Projects tabs with empty states, full-width `New Project` button), `components/editor/dialog.tsx` (`EditorDialog`: fixed 520×420 frame with header/content/footer slots, slide + fade transition). Composed in `components/editor/editor-shell.tsx`, which `app/editor/layout.tsx` wraps around every `/editor` route's content; `New Project` opens a placeholder dialog. `tsc`, `npm run lint` and `npm run build` pass.
 - 01 Design System — shadcn/ui initialized (style `base-nova`, built on `@base-ui/react`); added Button, Input, Card, Dialog, Tabs, Textarea, ScrollArea in `components/ui/`; installed `lucide-react`; `lib/utils.ts` exports `cn()`; `app/globals.css` holds the dark-only token palette from `ui-context.md`; `app/page.tsx` demos every component. `npm run build` and `npm run lint` pass.
 
 ## In Progress
@@ -34,6 +35,8 @@ change.
 - Dark-only: `dark` class is set on `<html>` (so shadcn `dark:` variants apply) and `color-scheme: dark` on `:root`. There is no light palette.
 - shadcn semantic variables (`--background`, `--primary`, `--card`, …) are mapped onto Ghost AI tokens in `:root`, so generated components get the Ghost AI palette without edits. Primary = brand cyan, accent = `--accent-primary`, destructive = `--state-error`, ring = brand.
 - Ghost AI Tailwind tokens (`@theme inline`): `bg-page`, `bg-surface`, `bg-elevated`, `bg-subtle`, `border-surface-border`, `border-surface-border-subtle`, `text-copy-{primary,secondary,muted,faint,ai}`, `brand`, `brand-dim`, `ai`, `state-{error,success,warning}`. The page background token is `page`, not `base`, because `--color-base` overrides Tailwind's `text-base` font-size utility with a color.
+- The navbar and sidebar live in `app/editor/layout.tsx` (via the client `EditorShell`, which owns sidebar/dialog state and renders `children` inside `<main>`), so they persist across editor routes. The layout and pages stay server components. The sidebar is positioned inside a `relative` content area below the navbar, so it overlays the canvas without pushing it.
+- `EditorDialog` wraps the shadcn/Base UI `Dialog` rather than reimplementing a modal, so focus trapping, Escape-to-close, scroll lock, and focus restoration come from Base UI. It is controlled via `isOpen` / `onClose`; actions are passed through the `footer` slot.
 - Radius scale is applied at call sites (`rounded-2xl` on cards, `rounded-3xl` on dialogs) rather than in `components/ui/*`.
 
 ## Session Notes
