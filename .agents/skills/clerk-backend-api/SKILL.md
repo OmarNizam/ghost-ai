@@ -62,8 +62,10 @@ curl -s -X POST "https://api.clerk.com/v1/organizations/${ORG_ID}/invitations" \
 ### SDK equivalent (for Next.js / TypeScript projects with `@clerk/nextjs` or `@clerk/backend`)
 
 ```typescript
-import { clerkClient } from '@clerk/nextjs/server'
-// OR if using @clerk/backend directly:
+import { clerkClient as getClerkClient } from '@clerk/nextjs/server'
+// `clerkClient` from @clerk/nextjs is an async factory — await it to get the client
+const clerkClient = await getClerkClient()
+// OR if using @clerk/backend directly (returns an instance, no await needed):
 // import { createClerkClient } from '@clerk/backend'
 // const clerkClient = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY })
 
@@ -93,8 +95,10 @@ const invitation = await clerkClient.organizations.createOrganizationInvitation(
 
 **For `plan: 'pro'` and `onboarded: true` — use `public_metadata`** (frontend-readable, server-writable):
 
+Metadata has its own endpoint: `PATCH /v1/users/{user_id}/metadata` deep-merges the supplied fields; `PUT` on the same path replaces each supplied field in full. `PATCH /v1/users/{user_id}` no longer accepts metadata.
+
 ```bash
-curl -s -X PATCH "https://api.clerk.com/v1/users/${USER_ID}" \
+curl -s -X PATCH "https://api.clerk.com/v1/users/${USER_ID}/metadata" \
   -H "Authorization: Bearer $CLERK_SECRET_KEY" \
   -H "Content-Type: application/json" \
   -d '{"public_metadata": {"plan": "pro", "onboarded": true}}' \
@@ -104,10 +108,11 @@ curl -s -X PATCH "https://api.clerk.com/v1/users/${USER_ID}" \
 **SDK equivalent:**
 
 ```typescript
-import { clerkClient } from '@clerk/nextjs/server'
-// OR: import { createClerkClient } from '@clerk/backend'
+import { clerkClient as getClerkClient } from '@clerk/nextjs/server'
+// OR: import { createClerkClient } from '@clerk/backend' (returns an instance, no await needed)
 
-await clerkClient.users.updateUser(userId, {
+const clerkClient = await getClerkClient()
+await clerkClient.users.updateUserMetadata(userId, {
   publicMetadata: { plan: 'pro', onboarded: true },   // readable by client, writable server-only
   // privateMetadata: { stripeId: 'cus_xxx' },         // server-only read AND write
   // unsafeMetadata: { step: 'welcome' },              // client-writable, avoid sensitive data
@@ -167,7 +172,14 @@ Returns: User object
 **Update user**
 ```
 PATCH /v1/users/{user_id}
-Body (JSON, snake_case): { public_metadata, private_metadata, unsafe_metadata, first_name, last_name, username, ... }
+Body (JSON, snake_case): { first_name, last_name, username, ... }
+```
+
+**Update user metadata**
+```
+PATCH /v1/users/{user_id}/metadata   — deep-merges the supplied fields
+PUT   /v1/users/{user_id}/metadata   — replaces each supplied field in full (omitted fields are untouched)
+Body (JSON, snake_case): { public_metadata, private_metadata, unsafe_metadata }
 ```
 
 **Delete user — IRREVERSIBLE**
@@ -273,21 +285,23 @@ Use the output to determine the latest version and available tags.
 
 `currentUser()` makes a real API call that counts against rate limits. Use `auth()` for just the session claims — it reads from the token without an API call.
 
-### Metadata Overwrites (Not Merges)
+### Metadata: Merge vs Replace
 
-`updateUser({ publicMetadata: { role: 'admin' } })` REPLACES all public metadata, not merges. To add a field without losing existing data: read first, spread, then write.
+Updating metadata through `updateUser()` is deprecated. Use `updateUserMetadata()` (deep merge) to add or change fields, or `replaceUserMetadata()` to overwrite a field in full.
 
 Wrong:
 ```typescript
 await clerkClient.users.updateUser(userId, { publicMetadata: { newField: 'value' } })
 ```
-This DELETES all other `publicMetadata` fields.
+Deprecated, and it REPLACES all other `publicMetadata` fields.
 
 Right:
 ```typescript
-const user = await clerkClient.users.getUser(userId)
-await clerkClient.users.updateUser(userId, {
-  publicMetadata: { ...user.publicMetadata, newField: 'value' },
+import { clerkClient as getClerkClient } from '@clerk/nextjs/server'
+
+const clerkClient = await getClerkClient()
+await clerkClient.users.updateUserMetadata(userId, {
+  publicMetadata: { newField: 'value' },  // merged into the existing publicMetadata
 })
 ```
 
