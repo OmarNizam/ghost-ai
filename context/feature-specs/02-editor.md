@@ -32,7 +32,7 @@ The project sidebar will include the following elements:
 - opening it should not push page content
 - slides in and out smoothly when toggled
 - slides in from the left
-- accepts `isOpen` prop.
+- accepts `isOpen` prop and `onClose` callback function.
 - header section with `Projects` title + close button.
 - shadcn `Tabs`:
   - My Projects
