@@ -1,69 +1,124 @@
-import Image from "next/image";
+import { Ghost, Plus, Sparkles } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
+
+const sampleComponents = [
+  "API Gateway",
+  "Auth Service",
+  "User Service",
+  "Project Service",
+  "PostgreSQL",
+  "Redis Cache",
+  "Message Queue",
+  "Spec Worker",
+  "Blob Storage",
+  "CDN",
+];
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
+    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 p-4 sm:p-8">
+      <header className="flex items-center gap-2">
+        <Ghost className="h-5 w-5 text-brand" aria-hidden />
+        <h1 className="text-lg font-semibold text-copy-primary">Ghost AI</h1>
+      </header>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle>New project</CardTitle>
+            <CardDescription>Describe the system you want to design.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3">
+            <Input placeholder="Project name" aria-label="Project name" />
+            <Textarea
+              placeholder="A real-time chat app with presence and message history…"
+              aria-label="System description"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+          </CardContent>
+          <CardFooter className="justify-end gap-2">
+            <Dialog>
+              <DialogTrigger render={<Button variant="outline" />}>
+                <Plus className="h-5 w-5" aria-hidden />
+                Template
+              </DialogTrigger>
+              <DialogContent className="rounded-3xl">
+                <DialogHeader>
+                  <DialogTitle>Import a template</DialogTitle>
+                  <DialogDescription>
+                    Start from a prebuilt system design and refine it on the canvas.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter>
+                  <DialogClose render={<Button variant="ghost" />}>Cancel</DialogClose>
+                  <Button>Import</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button>
+              <Sparkles className="h-5 w-5" aria-hidden />
+              Generate
+            </Button>
+          </CardFooter>
+        </Card>
+
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle>Architecture</CardTitle>
+            <CardDescription>Components and generated spec.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Tabs defaultValue="components">
+              <TabsList>
+                <TabsTrigger value="components">Components</TabsTrigger>
+                <TabsTrigger value="spec">Spec</TabsTrigger>
+              </TabsList>
+              <TabsContent value="components">
+                <ScrollArea className="h-40 rounded-xl border border-surface-border">
+                  <ul className="flex flex-col p-2">
+                    {sampleComponents.map((name) => (
+                      <li
+                        key={name}
+                        className="rounded-xl px-2 py-1.5 text-sm text-copy-secondary"
+                      >
+                        {name}
+                      </li>
+                    ))}
+                  </ul>
+                </ScrollArea>
+              </TabsContent>
+              <TabsContent value="spec">
+                <p className="text-sm text-copy-muted">
+                  The <span className="text-copy-ai">AI-generated</span> technical
+                  specification will appear here.
+                </p>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+    </main>
   );
 }
