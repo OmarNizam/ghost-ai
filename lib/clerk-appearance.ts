@@ -13,14 +13,24 @@ export const clerkAppearance: Appearance = {
     colorNeutral: "var(--text-primary)",
     colorMuted: "var(--bg-subtle)",
     colorMutedForeground: "var(--text-muted)",
-    colorInput: "var(--bg-elevated)",
+    colorInput: "var(--bg-subtle)",
     colorInputForeground: "var(--text-primary)",
-    colorBorder: "var(--border-default)",
+    // Clerk renders borders as colorBorder at ~7–11% alpha, so a light token is needed for
+    // them to land near --border-default on the dark surfaces.
+    colorBorder: "var(--text-primary)",
     colorRing: "var(--accent-brand)",
     colorDanger: "var(--state-error)",
     colorSuccess: "var(--state-success)",
     colorWarning: "var(--state-warning)",
     fontFamily: "var(--font-geist-sans)",
+    fontSize: "1rem",
     borderRadius: "var(--radius)",
+  },
+  options: {
+    socialButtonsVariant: "blockButton",
+  },
+  elements: {
+    // Stack social buttons one per row so the full "Continue with …" label fits.
+    socialButtons: { gridTemplateColumns: "1fr" },
   },
 };
