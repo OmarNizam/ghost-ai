@@ -23,3 +23,37 @@ Read the following guidelines files in order before implementing or making ant a
 Update `context/progress-tracker.md` after each meaningful implementation, change, or milestone in the project.
 
 If implementation changes the architecture, project structure, or any significant aspect of the application, ensure that `context/progress-tracker.md` is updated accordingly to reflect these changes before continue.
+
+## Stack
+
+Installed (from `package.json`): Next.js 16 (App Router), React 19, TypeScript (strict), Tailwind CSS v4, shadcn/ui (`base-nova` style on `@base-ui/react`), Clerk v7 (`@clerk/nextjs` + `@clerk/ui`), Lucide icons.
+Planned, not installed yet: Prisma + PostgreSQL, Liveblocks + React Flow, Trigger.dev, Vercel Blob (see `context/architecture.md`).
+
+## Build approach
+
+<TBD, set by /scope>
+
+## Commands
+
+```bash
+npm install
+npm run dev     # needs .env.local with the Clerk vars below
+npm run build   # must pass before a unit is done
+npm run lint
+# No test runner is set up yet.
+```
+
+Required in `.env.local`: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in`, `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up`. `proxy.ts` throws on startup if either URL var is missing.
+
+## Rules
+
+- Route protection lives in `proxy.ts` (Next 16 renamed `middleware.ts`). Only the sign in and sign up paths are public; protected layouts also call `auth.protect()`.
+- shadcn components here are Base UI, not Radix: compose with the `render` prop (`<DialogTrigger render={<Button />}>`), never `asChild`.
+- Import `cn` only from `@/lib/utils`. After `npx shadcn@latest add`, rewrite the generated `from "cn"` import to `@/lib/utils`.
+
+## Agent skills
+
+- [clerk](.agents/skills/clerk/): `clerk/skills`, routes a Clerk task to the right skill
+- [clerk-nextjs-patterns](.agents/skills/clerk-nextjs-patterns/): `clerk/skills`, proxy, Server Actions, caching with Clerk
+- [clerk-custom-ui](.agents/skills/clerk-custom-ui/): `clerk/skills`, appearance and custom auth flows
+- [clerk-setup](.agents/skills/clerk-setup/), [clerk-cli](.agents/skills/clerk-cli/), [clerk-backend-api](.agents/skills/clerk-backend-api/): `clerk/skills`, setup, CLI, Backend API
