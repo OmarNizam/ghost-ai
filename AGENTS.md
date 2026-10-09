@@ -31,7 +31,7 @@ Planned, not installed yet: Prisma + PostgreSQL, Liveblocks + React Flow, Trigge
 
 ## Build approach
 
-<TBD, set by /scope>
+Tracer Bullet (prove one real thread through every layer, then thicken one segment at a time). Set in `docs/scope/scope.md`.
 
 ## Commands
 
