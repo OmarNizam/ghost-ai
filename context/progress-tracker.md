@@ -13,6 +13,7 @@ change.
 
 ## Completed
 
+- Scope: `docs/scope/scope.md` plans the rest of the product (Tracer Bullet, Beta workflow). Features 1 to 5 are enrolled as existing; next come the data model and error monitoring foundations, then Slice 1 (projects, canvas, AI generation, spec generation) and later slices for realtime, sharing, templates, history, and launch readiness.
 - Context audit: root `AGENTS.md` gained Stack, Build approach (placeholder until `/scope`), Commands with the required Clerk env vars, three global Rules (`proxy.ts`, Base UI `render` prop, `cn` import path) and the Clerk Agent skills. Context docs now match the code: `ui-context.md` names the real token classes instead of `bg-[var(...)]`, `architecture.md` and `code-standards.md` describe `context/` as docs and `app/` as the router (no `pages/` or `styles/`), `text-brand` typo fixed, and `project-overview.md` stores canvas snapshots in Vercel Blob.
 
 - README — replaced the create-next-app boilerplate with a project README: overview, quick start with the required Clerk env vars, scripts, a built-vs-planned status table, project structure, Next 16 / Base UI / token gotchas, the `context/` reading order, and the branch → `develop` → `main` contribution flow.
