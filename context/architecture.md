@@ -26,8 +26,8 @@
 - `trigger` - Long-running background jobs and workflows managed by Trigger.dev: AI design generation and spec generation.
 - `lib` - Shared utility functions, helpers, and abstractions used across the application.
 - `components` - Reusable UI components used throughout the application or UI Composition: canvas, sidebars, dialogs and interactive elements.
-- `context` - React context providers and hooks for managing global state and side effects.
-- `pages` - Next.js page components that define the application's routes and server-side rendering logic.
+- `context` - Project context and documentation files (overview, architecture, UI, code standards, workflow rules, progress tracker).
+- `app` - Next.js App Router routes: layouts, pages, and route groups such as `(auth)`.
 - `public` - Static assets such as images, fonts, and other files that are publicly accessible.
 - `Prisma` - Database client and ORM for interacting with the PostgreSQL database.
 - `data` - Seed data and fixtures used to populate the database during development and testing. Legacy or initial data for the application. Not used for new artifacts.

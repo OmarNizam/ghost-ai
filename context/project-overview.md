@@ -44,7 +44,7 @@ the resulting architecture or graph.
 - Users can add, edit, and delete components on the canvas.
 - AI agent can generate an initial system architecture on the canvas.
 - Changes are synchronized in real-time among all collaborators.
-- Canvas snapshots persisted to the filesystem for version history and recovery.
+- Canvas snapshots persisted to Vercel Blob for version history and recovery.
 
 ### Starter System Design Templates
 
