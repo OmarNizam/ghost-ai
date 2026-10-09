@@ -35,10 +35,10 @@ Components must use these tokens — no hardcoded hex values or raw Tailwind col
 | Success          | `--state-success`    | `#34d399`                 |
 | Warning          | `--state-warning`    | `#fbbf24`                 |
 
-Tailwind utilites map to these variables via the `@theme inline` directive. For example, `bg-[var(--bg-base)]` will apply the page background color.
-Similarly, `text-[var(--text-primary)]` will apply the primary text color.
-For accent colors, use `bg-[var(--accent-brand)]`, `bg-[var(--accent-brand-dim)]`, `bg-[var(--accent-ai)]`, `text-[var(--text-ai)]`, and `bg-[var(--accent-primary)]` as needed.
-For state colors, use `bg-[var(--state-error)]`, `bg-[var(--state-success)]`, and `bg-[var(--state-warning)]` as needed.
+Tailwind utilities map to these variables via the `@theme inline` directive in `app/globals.css`. Use the named classes, not `bg-[var(...)]` arbitrary values. For example, `bg-page` applies the page background (`--bg-base`; the class is `page`, not `base`, because `--color-base` would clash with Tailwind's `text-base` font size).
+Surfaces: `bg-surface`, `bg-elevated`, `bg-subtle`. Borders: `border-surface-border`, `border-surface-border-subtle`. Text: `text-copy-primary`, `text-copy-secondary`, `text-copy-muted`, `text-copy-faint`, `text-copy-ai`.
+For accent colors, use `brand`, `brand-dim` and `ai` (for example `bg-brand`, `bg-brand-dim`, `text-brand`, `bg-ai`). `--accent-primary` reaches Tailwind through shadcn's `accent` (`bg-accent`).
+For state colors, use `state-error`, `state-success` and `state-warning` (for example `text-state-error`).
 
 ## Typography
 

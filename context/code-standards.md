@@ -29,7 +29,7 @@
 - Use CSS custom property tokens defined in globals.css — no raw Tailwind color classes like zinc-\*
   or hardcoded hex values.
 - Reference tokens through their Tailwind class names: `bg-page`, `text-copy-primary`, `border-surface-border`,
-  `tex-brand`, etc.
+  `text-brand`, etc.
 - Maintain the border radius scale: `rounded-xl` for small elements, `rounded-2xl` for cards and
   `rounded-3xl` for modals.
 - Follow the border radius scale defined in `ui-context.md`.
@@ -54,8 +54,7 @@
 
 - `lib/` — Utility functions, services, Prisma client, auth helpers, and other shared logic that doesn't belong in a specific feature folder.
 - `components/` — Reusable UI components that can be shared across different pages and features, UI composition only no business logic.
-- `pages/` — Next.js page components, including route handlers and server components.
-- `styles/` — Global and component-specific styles, including Tailwind configuration and CSS custom properties.
+- `app/`: Next.js App Router routes (layouts, pages, route groups) plus `globals.css`, which holds the CSS custom property tokens and the Tailwind `@theme inline` mapping. There is no `pages/` or `styles/` folder.
 - `public/` — Static assets such as images, fonts, and other files that need to be publicly accessible.
 - `context/` — Project context and documentation files, including architecture and code standards.
 - `features/` — Feature-specific modules containing components, hooks, and other logic related to a particular feature.
