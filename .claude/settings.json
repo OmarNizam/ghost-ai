@@ -1,15 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash()npm install",
-      "Bash()npm run lint",
-      "Bash()npm run build",
-      "Bash()npm run test",
-      "Bash()npm start"
+      "Bash(npm install)",
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm run test)",
+      "Bash(npm start)"
     ],
-    "ask": ["Bash()git push *"],
+    "ask": ["Bash(git push *)"],
     "deny": [
-      "Bash()rm -rf *",
+      "Bash(rm -rf *)",
       "Read(.env)",
       "Read(.env.*)",
       "Edit(.env)",
