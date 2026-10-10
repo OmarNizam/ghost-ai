@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 import { EditorDialog } from "@/components/editor/dialog";
 import { EditorNavbar } from "@/components/editor/editor-navbar";
 import { ProjectSidebar } from "@/components/editor/project-sidebar";
 import { Button } from "@/components/ui/button";
+import { isSidebarToggleShortcut } from "@/lib/sidebar-shortcut";
 
 interface EditorShellProps {
   children: ReactNode;
@@ -15,6 +16,20 @@ interface EditorShellProps {
 export function EditorShell({ children }: EditorShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  useEffect(() => {
+    // The modal owns the keyboard while it is open, so the shortcut stays off.
+    if (isDialogOpen) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isSidebarToggleShortcut(event)) return;
+      event.preventDefault();
+      setIsSidebarOpen((open) => !open);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isDialogOpen]);
 
   const closeDialog = () => setIsDialogOpen(false);
 

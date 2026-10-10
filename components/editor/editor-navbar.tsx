@@ -24,6 +24,7 @@ export function EditorNavbar({ isSidebarOpen, onToggleSidebar }: EditorNavbarPro
           aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
           aria-expanded={isSidebarOpen}
           aria-controls="project-sidebar"
+          aria-keyshortcuts="Meta+B Control+B"
         >
           <ToggleIcon className="h-5 w-5" aria-hidden />
         </Button>
