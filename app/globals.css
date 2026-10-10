@@ -2,6 +2,13 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+/* Docs mention class names like `bg-[var(...)]` as examples; don't generate CSS from them. */
+@source not "../context";
+@source not "../docs";
+@source not "../factory";
+@source not "../.claude";
+@source not "../.agents";
+
 @custom-variant dark (&:is(.dark *));
 
 /*
