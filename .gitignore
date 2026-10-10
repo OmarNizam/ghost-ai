@@ -42,3 +42,8 @@ next-env.d.ts
 
 # claude code worktrees (factory jobs)
 /.claude/worktrees/
+
+# playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
