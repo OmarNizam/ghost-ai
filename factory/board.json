@@ -4,7 +4,7 @@
       "id": "001-dark-not-found-page",
       "title": "Dark not-found page",
       "branch": "factory/001-dark-not-found-page",
-      "stage": "merged",
+      "stage": "pr",
       "round": 1,
       "reviews": {
         "security": "PASS",
@@ -26,8 +26,9 @@
       "builder": "a8503ef344fd812ac",
       "worktree": ".claude/worktrees/factory-001-dark-not-found-page",
       "note": "",
-      "updated": "2026-10-10T11:02:31Z",
-      "approvedBy": "human"
+      "updated": "2026-10-10T11:09:18Z",
+      "approvedBy": "human",
+      "pr": "https://github.com/OmarNizam/ghost-ai/pull/15"
     }
   ]
 }

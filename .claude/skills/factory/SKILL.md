@@ -1,6 +1,6 @@
 ---
 name: factory
-description: "Run /factory to push a feature through the software factory: spec, build, four parallel reviews, approval, merge. /factory <feature> | next | approve <job-id> | rework <job-id> <note>. The session running it is the orchestrator."
+description: "Run /factory to push a feature through the software factory: spec, build, four parallel reviews, approval, pull request. /factory <feature> | next | approve <job-id> | rework <job-id> <note>. The session running it is the orchestrator."
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, Agent, SendMessage, ToolSearch
 ---
 
@@ -14,7 +14,7 @@ context from files, not from this conversation, and each writes only its own fil
 
 ```bash
 BASE=develop     # job branches are cut from here ...
-MERGE=develop    # ... and merged back here. Keep them equal.
+MERGE=develop    # ... and PRs target here. Protected: never push or merge into it locally.
 MAX_ROUNDS=2     # review rounds per job; CHANGES after the last one → needs-human
 REVIEWERS="security ux ui code"
 ```
@@ -26,7 +26,7 @@ feature → spec-writer → builder → [security | ux | ui | code] → WAIT FOR
                            ▲                                       │
                            └──── any CHANGES (round < MAX_ROUNDS) ◄┤
                                                                    ▼ all PASS
-                                            approver → APPROVE → merge into $MERGE
+                                            approver → APPROVE → PR into $MERGE
                                                      → ESCALATE → needs-human
 ```
 
@@ -40,14 +40,20 @@ ROOT=$(git rev-parse --show-toplevel)                          # factory home: d
 MAIN_ROOT=$(cd "$(git rev-parse --git-common-dir)/.." && pwd)  # holds .env.local
 JOB=$ROOT/factory/jobs/<job-id>                                # job files (markdown)
 WT=$ROOT/.claude/worktrees/factory-<job-id>                    # job code (branch factory/<job-id>)
+git fetch -q origin "$BASE"
+BASE_REF=origin/$BASE   # cut and diff against the remote, so the PR carries only the job's commits
 ```
 
-**Docs come from `$ROOT`, code from `$WT`.** The job branch is cut from `$BASE`, whose
+**Docs come from `$ROOT`, code from `$WT`.** The job branch is cut from `$BASE_REF`, whose
 `AGENTS.md` and `context/` may be older than the checkout you run from. Every agent
 prompt includes `$ROOT` and says: "read `AGENTS.md` and `context/` from `$ROOT`".
 
 `factory/` and `.claude/agents/` must exist in `$ROOT`. If they don't (for example the
 branch adding them isn't merged yet), stop and say so.
+
+**PR status.** At the start of every invocation, check each job in stage `pr`:
+`gh pr view "<pr url>" --json state -q .state`. `MERGED` → set `stage: "merged"`.
+`CLOSED` → `stage: "needs-human"`, `note: "PR closed without merging"`. Anything else: leave it.
 
 ## board.json
 
@@ -61,10 +67,11 @@ Shape (keep `round` and `reviews` for the current round, `rounds` for history):
   "rounds": [ { "round": 1, "reviews": { "security": "CHANGES", "ux": "PASS", "ui": "PASS", "code": "CHANGES" } },
               { "round": 2, "reviews": { "security": "CHANGES", "ux": "PASS", "ui": "pending", "code": "PASS" } } ],
   "builder": "builder-003-rate-limiting", "worktree": ".claude/worktrees/factory-003-rate-limiting",
-  "note": "", "updated": "2026-10-10T12:00:00Z" } ] }
+  "pr": "", "note": "", "updated": "2026-10-10T12:00:00Z" } ] }
 ```
 
-`stage` is one of `spec`, `build`, `review`, `approve`, `merged`, `needs-human`.
+`stage` is one of `spec`, `build`, `review`, `approve`, `pr`, `merged`, `needs-human`.
+`pr` holds the pull request URL once one is open.
 `rounds` holds every round including the current one, which also mirrors into
 `round` + `reviews`. Always write the whole file atomically: write
 `factory/board.json.tmp`, then `mv` it over `factory/board.json`. Set `updated` on
@@ -91,14 +98,14 @@ Read them with `head -n 1`.
    with a note and stop.
 4. **Worktree.** Create the job's isolated checkout (never switch branches in `$ROOT`):
    ```bash
-   git worktree add -b "factory/<job-id>" "$WT" "$BASE"
+   git worktree add -b "factory/<job-id>" "$WT" "$BASE_REF"
    ln -s "$MAIN_ROOT/.env.local" "$WT/.env.local"   # symlink only; never read .env files
    (cd "$WT" && npm ci --no-audit --no-fund)        # don't symlink node_modules: Turbopack rejects it
    ```
 5. **Build.** Set `stage: "build"`. Spawn `builder` in the background **with the name
    `builder-<job-id>`** (if the Agent tool has no name field, use the agent id from the
    spawn result instead). Store that handle in the job's `builder` field. Give it `$ROOT`,
-   `$WT`, `$BASE`, `$JOB/spec.md`, and the output path `$JOB/build.md`. Wait for it.
+   `$WT`, `$BASE_REF`, `$JOB/spec.md`, and the output path `$JOB/build.md`. Wait for it.
 6. **Review round 1** (below).
 
 ### Review round N
@@ -107,7 +114,7 @@ Read them with `head -n 1`.
    `rounds`. `mkdir -p $JOB/round-N`.
 2. Spawn **all four reviewers in a single message**, in the background:
    `security-reviewer`, `ux-reviewer`, `ui-reviewer`, `code-reviewer`. Give each
-   `$ROOT`, `$WT`, `$BASE` (they review `git diff $BASE...HEAD` inside `$WT`),
+   `$ROOT`, `$WT`, `$BASE_REF` (they review `git diff $BASE_REF...HEAD` inside `$WT`),
    `$JOB/spec.md`, `$JOB/build.md`, their output path `$JOB/round-N/review-<name>.md`,
    and for N > 1 the previous round folder, so they check that the fixes landed.
 3. **WAIT FOR ALL.** After each completion notice, read that reviewer's first line,
@@ -132,42 +139,37 @@ Store the new handle.
 
 ### Approval
 
-1. Set `stage: "approve"`. Spawn `approver` with `$ROOT`, `$WT`, `$BASE`, `$JOB` (it
+1. Set `stage: "approve"`. Spawn `approver` with `$ROOT`, `$WT`, `$BASE_REF`, `$JOB` (it
    reads `spec.md`, `build.md`, every round folder), and the output path `$JOB/decision.md`.
-2. `APPROVE` → **Merge**. `ESCALATE` → `stage: "needs-human"`, `note`: the decision's
+2. `APPROVE` → **Pull request**. `ESCALATE` → `stage: "needs-human"`, `note`: the decision's
    Reason line. Stop.
 
-### Merge
+### Pull request
 
-Git refuses to check out a branch that another worktree already has, so first find
-where `$MERGE` lives:
+`$MERGE` is protected: never push to it or merge into it locally. Open a PR and let a
+human merge it on GitHub.
 
-```bash
-# porcelain lists "worktree <path>", "HEAD <sha>", "branch <ref>" per entry.
-# No awk on purpose: skill args are substituted for positional vars, which breaks awk's field syntax.
-HOLDER=$(git worktree list --porcelain | grep -B2 -x "branch refs/heads/$MERGE" | sed -n 's/^worktree //p')
-```
-
-- **`$HOLDER` empty** (nobody has `$MERGE` checked out): merge in the job worktree.
-  ```bash
-  cd "$WT" && git switch "$MERGE" && git merge --no-ff "factory/<job-id>" -m "factory: merge <job-id>"
-  ```
-- **`$HOLDER` set and clean**: merge there. A clean tree with no conflicts is safe to
-  merge into. "Clean" ignores `factory/` (your own board, backlog, and job files, which
-  are always dirty mid-run) and untracked files. If the merge would overwrite one of
-  those, git refuses before touching anything; treat that like a conflict.
-  ```bash
-  git -C "$HOLDER" status --porcelain --untracked-files=no -- . ':(exclude)factory'  # must print nothing
-  git -C "$HOLDER" merge --no-ff "factory/<job-id>" -m "factory: merge <job-id>"
-  ```
-- **`$HOLDER` has uncommitted changes** (that check prints anything): don't touch it. Set `needs-human` with
-  `note: "$MERGE is checked out at $HOLDER with uncommitted changes"`. The user commits
-  or switches, then runs `/factory approve <job-id>`.
-
-If the merge conflicts, run `git merge --abort` in the same place and set `needs-human`
-with the reason. On success, set `stage: "merged"`, then `git worktree remove "$WT"`
-(after `git switch --detach` if you merged in `$WT`). Keep the branch. Do **not** push.
-Tell the user `git push origin $MERGE`.
+1. Write the PR body to `$JOB/pr.md`:
+   - **Summary**: what the job adds, from `spec.md` and `build.md`, and the files changed.
+   - **Reviews**: each round's four verdicts, then the decision (`APPROVE`, or
+     approved by a human after an escalation, with its Reason line).
+   - **Test plan**: one checkbox per acceptance criterion, ticked only where `build.md`
+     or a review shows it was verified. Leave unverified ones unticked.
+   - End with `🤖 Generated with [Claude Code](https://claude.com/claude-code)`.
+2. Push the job branch and open the PR from `$WT`:
+   ```bash
+   git -C "$WT" push -u origin "factory/<job-id>"
+   cd "$WT"
+   URL=$(gh pr list --head "factory/<job-id>" --state open --json url -q '.[0].url')
+   [ -n "$URL" ] || URL=$(gh pr create --base "$MERGE" --head "factory/<job-id>" \
+     --title "factory: <title> (<job-id>)" --body-file "$JOB/pr.md")
+   ```
+   If a PR for the branch already exists (after a rework), the push updates it; don't
+   open a second one.
+3. If the push or `gh` fails, set `needs-human` with the error as the note and stop.
+4. On success, set `stage: "pr"` and `pr: <url>`, then `git worktree remove "$WT"`.
+   Keep the branch. Tell the user the PR URL; after they merge it on GitHub,
+   `git pull` on `$MERGE`. The next `/factory` run moves the job to `merged`.
 
 ---
 
@@ -179,11 +181,13 @@ Read `factory/backlog.md`, take the first `- [ ]` line, change it to
 ## /factory approve <job-id>
 
 Only for a job in `needs-human`. Show the user the decision or note first, then run
-**Merge**. Add `"approvedBy": "human"` to the job.
+**Pull request**. Add `"approvedBy": "human"` to the job.
 
 ## /factory rework <job-id> <note>
 
 Write the note to `$JOB/rework-<k>.md` (k = 1, 2, …). Set `stage: "build"`, `note: ""`.
+If `$WT` is gone (the PR step removes it), recreate it from the existing branch with
+`git worktree add "$WT" "factory/<job-id>"`, then the symlink and `npm ci` from step 4.
 Resume (or respawn) the builder, pointing it at that file, then run the next review
 round. A human rework gives the job a fresh `MAX_ROUNDS` budget from that round.
 
@@ -192,5 +196,5 @@ round. A human rework gives the job a fresh `MAX_ROUNDS` budget from that round.
 ## Report
 
 End every run with one short block: job id, final stage, branch, rounds used, and the
-next command (`/factory approve <id>`, `git push origin develop`, or `/factory next`).
+next command (`/factory approve <id>`, "review and merge <pr url>", or `/factory next`).
 Dashboard: `cd factory && python3 -m http.server 8000` → http://localhost:8000/dashboard.html
