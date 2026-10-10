@@ -42,6 +42,7 @@ npm run build   # must pass before a unit is done
 npm run lint
 npm test          # Vitest + Testing Library (jsdom); unit tests sit beside the source as *.test.tsx
 npm run test:e2e  # Playwright in e2e/; builds and serves on port 3100
+npx next typegen && npx tsc --noEmit  # type check; typegen writes the global LayoutProps/PageProps types to .next/, so a bare tsc in a fresh clone or worktree fails without it
 ```
 
 Required in `.env.local`: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in`, `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up`. `proxy.ts` throws on startup if either URL var is missing.
