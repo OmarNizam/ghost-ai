@@ -4,7 +4,7 @@
       "id": "001-dark-not-found-page",
       "title": "Dark not-found page",
       "branch": "factory/001-dark-not-found-page",
-      "stage": "needs-human",
+      "stage": "merged",
       "round": 1,
       "reviews": {
         "security": "PASS",
@@ -25,8 +25,9 @@
       ],
       "builder": "a8503ef344fd812ac",
       "worktree": ".claude/worktrees/factory-001-dark-not-found-page",
-      "note": "AC8 signed-in check is unverified. A human with a Clerk session needs to open /does-not-exist, confirm a 404 in the Network tab and that \"Back to editor\" goes to /editor. All other ACs are proven and round 1 is 4/4 PASS.",
-      "updated": "2026-10-10T10:56:03Z"
+      "note": "",
+      "updated": "2026-10-10T11:02:31Z",
+      "approvedBy": "human"
     }
   ]
 }
