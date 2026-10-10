@@ -4,7 +4,7 @@
       "id": "001-dark-not-found-page",
       "title": "Dark not-found page",
       "branch": "factory/001-dark-not-found-page",
-      "stage": "pr",
+      "stage": "merged",
       "round": 1,
       "reviews": {
         "security": "PASS",
@@ -26,9 +26,38 @@
       "builder": "a8503ef344fd812ac",
       "worktree": ".claude/worktrees/factory-001-dark-not-found-page",
       "note": "",
-      "updated": "2026-10-10T11:09:18Z",
+      "updated": "2026-10-10T14:10:06Z",
       "approvedBy": "human",
       "pr": "https://github.com/OmarNizam/ghost-ai/pull/15"
+    },
+    {
+      "id": "002-sidebar-toggle-shortcut",
+      "title": "Sidebar toggle shortcut",
+      "branch": "factory/002-sidebar-toggle-shortcut",
+      "stage": "merged",
+      "round": 1,
+      "reviews": {
+        "security": "PASS",
+        "ux": "PASS",
+        "ui": "PASS",
+        "code": "PASS"
+      },
+      "rounds": [
+        {
+          "round": 1,
+          "reviews": {
+            "security": "PASS",
+            "ux": "PASS",
+            "ui": "PASS",
+            "code": "PASS"
+          }
+        }
+      ],
+      "builder": "ac8dfeb1203d51f85",
+      "worktree": ".claude/worktrees/factory-002-sidebar-toggle-shortcut",
+      "pr": "https://github.com/OmarNizam/ghost-ai/pull/20",
+      "note": "",
+      "updated": "2026-10-10T14:37:02Z"
     }
   ]
 }

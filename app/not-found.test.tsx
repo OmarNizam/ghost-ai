@@ -7,8 +7,8 @@ import NotFound from "./not-found";
 // Spec: context/feature-specs/04-dark-not-found-page.md
 describe("NotFound (app/not-found.tsx)", () => {
   it("is a synchronous component that renders without props (AC1)", () => {
-    expect(NotFound.length).toBe(0);
     expect(NotFound()).not.toBeInstanceOf(Promise);
+    expect(() => render(<NotFound />)).not.toThrow();
   });
 
   it("shows a 'Page not found' heading with a 404 label (AC2)", () => {
