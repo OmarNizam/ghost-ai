@@ -13,8 +13,8 @@ context from files, not from this conversation, and each writes only its own fil
 ## Config (edit here)
 
 ```bash
-BASE=main        # job branches are cut from here ...
-MERGE=main       # ... and merged back here. Keep them equal.
+BASE=develop     # job branches are cut from here ...
+MERGE=develop    # ... and merged back here. Keep them equal.
 MAX_ROUNDS=2     # review rounds per job; CHANGES after the last one → needs-human
 REVIEWERS="security ux ui code"
 ```
@@ -139,16 +139,30 @@ Store the new handle.
 
 ### Merge
 
-Run this in the job worktree, not in `$ROOT`:
+Git refuses to check out a branch that another worktree already has, so first find
+where `$MERGE` lives:
 
 ```bash
-cd "$WT" && git switch "$MERGE" && git merge --no-ff "factory/<job-id>" -m "factory: merge <job-id>"
+HOLDER=$(git worktree list --porcelain | awk -v b="branch refs/heads/$MERGE" '/^worktree /{w=substr($0,10)} $0==b{print w}')
 ```
 
-If `git switch` fails because `$MERGE` is checked out in another worktree, or the merge
-conflicts (then `git merge --abort`), set `needs-human` with the reason. On success, set
-`stage: "merged"`, then `git switch --detach` in `$WT` and `git worktree remove "$WT"`
-(keep the branch). Do **not** push. Tell the user `git push origin $MERGE`.
+- **`$HOLDER` empty** (nobody has `$MERGE` checked out): merge in the job worktree.
+  ```bash
+  cd "$WT" && git switch "$MERGE" && git merge --no-ff "factory/<job-id>" -m "factory: merge <job-id>"
+  ```
+- **`$HOLDER` set and clean** (`git -C "$HOLDER" status --porcelain` prints nothing):
+  merge there. A clean tree with no conflicts is safe to merge into.
+  ```bash
+  git -C "$HOLDER" merge --no-ff "factory/<job-id>" -m "factory: merge <job-id>"
+  ```
+- **`$HOLDER` has uncommitted changes**: don't touch it. Set `needs-human` with
+  `note: "$MERGE is checked out at $HOLDER with uncommitted changes"`. The user commits
+  or switches, then runs `/factory approve <job-id>`.
+
+If the merge conflicts, run `git merge --abort` in the same place and set `needs-human`
+with the reason. On success, set `stage: "merged"`, then `git worktree remove "$WT"`
+(after `git switch --detach` if you merged in `$WT`). Keep the branch. Do **not** push.
+Tell the user `git push origin $MERGE`.
 
 ---
 
@@ -173,5 +187,5 @@ round. A human rework gives the job a fresh `MAX_ROUNDS` budget from that round.
 ## Report
 
 End every run with one short block: job id, final stage, branch, rounds used, and the
-next command (`/factory approve <id>`, `git push origin main`, or `/factory next`).
+next command (`/factory approve <id>`, `git push origin develop`, or `/factory next`).
 Dashboard: `cd factory && python3 -m http.server 8000` → http://localhost:8000/dashboard.html
