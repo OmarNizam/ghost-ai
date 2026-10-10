@@ -149,6 +149,7 @@ describe("EditorShell sidebar shortcut", () => {
     const { unmount } = renderShell();
     const added = addSpy.mock.calls.filter(([type]) => type === "keydown").map(([, handler]) => handler);
     expect(added).toHaveLength(1);
+    removeSpy.mockClear();
 
     unmount();
 
