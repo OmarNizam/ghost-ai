@@ -22,7 +22,7 @@
   header .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); }
   header .dot.live { background: var(--ok); box-shadow: 0 0 8px var(--ok); }
   header .meta { color: var(--muted); font-size: 12px; margin-left: auto; font-family: var(--mono); }
-  .board { display: grid; grid-template-columns: repeat(6, minmax(220px, 1fr)); gap: 12px;
+  .board { display: grid; grid-template-columns: repeat(7, minmax(220px, 1fr)); gap: 12px;
     padding: 16px 20px 40px; overflow-x: auto; }
   .col { min-width: 0; }
   .col h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 11px;
@@ -113,7 +113,7 @@
 <script>
 const STAGES = [
   ["spec", "Spec"], ["build", "Build"], ["review", "Review"],
-  ["approve", "Approve"], ["merged", "Merged"], ["needs-human", "Needs human"],
+  ["approve", "Approve"], ["pr", "PR open"], ["merged", "Merged"], ["needs-human", "Needs human"],
 ];
 const REVIEWERS = [["security", "SEC"], ["ux", "UX"], ["ui", "UI"], ["code", "CODE"]];
 const DEMO = new URLSearchParams(location.search).has("demo");
@@ -142,12 +142,13 @@ function render() {
   $("board").innerHTML = STAGES.map(([key, label], i) => {
     const jobs = board.jobs.filter((j) => j.stage === key);
     return `<section class="col ${key}">
-      <h2>${label} <span class="n">${jobs.length}</span>${i < 4 ? '<span class="arrow">→</span>' : ""}</h2>
+      <h2>${label} <span class="n">${jobs.length}</span>${i < 5 ? '<span class="arrow">→</span>' : ""}</h2>
       <div class="lane">${jobs.map(card).join("") || '<div class="empty">—</div>'}</div>
     </section>`;
   }).join("");
   document.querySelectorAll(".card").forEach((el) => el.onclick = () => openDrawer(el.dataset.id));
 }
+const prLabel = (url) => { const m = String(url).match(/\/pull\/(\d+)/); return m ? "#" + m[1] : url; };
 function card(j) {
   const rows = roundsOf(j).map((r) => `<div class="round"><span class="r">R${r.round}</span>${
     REVIEWERS.map(([k, short]) => { const v = (r.reviews || {})[k] || "pending"; return `<span class="chip ${esc(v)}" title="${k}: ${esc(v)}">${short}</span>`; }).join("")
@@ -157,6 +158,7 @@ function card(j) {
     <div class="id">${esc(j.id)}${live}</div>
     <div class="title">${esc(j.title || j.id)}</div>
     <div class="branch">${esc(j.branch)}</div>
+    ${j.pr ? `<div class="branch">PR ${esc(prLabel(j.pr))}</div>` : ""}
     ${rows ? `<div class="rounds">${rows}</div>` : ""}
     ${j.note ? `<div class="note">${j.stage === "needs-human" ? "⚠ " : ""}${esc(j.note)}</div>` : ""}
   </button>`;
@@ -169,6 +171,7 @@ function filesOf(j) {
   roundsOf(j).forEach((r) => REVIEWERS.forEach(([k, short]) =>
     f.push([`round-${r.round}/review-${k}.md`, `R${r.round} ${short}`, (r.reviews || {})[k]])));
   f.push(["decision.md", "decision"]);
+  f.push(["pr.md", "PR"]);
   return f;
 }
 async function getFile(id, path) {

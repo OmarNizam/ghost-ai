@@ -30,6 +30,8 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 | 17 | Product analytics | Slice 6 | planned |
 | 18 | Legal pages and cookie consent | Slice 6 | planned |
 | 19 | Accessibility pass | Slice 6 | planned |
+| 20 | Dark 404 page | Foundation | done |
+| 21 | Editor shell polish | Foundation | planned |
 
 ## Foundations
 
@@ -37,7 +39,7 @@ _These are recommendations to keep your build orderly, not requirements. Skip an
 Next.js 16 App Router with TypeScript, Tailwind v4, and shadcn/ui on Base UI, scaffolded before this workflow. code in `./`
 
 ### 2. Coding standards & tooling · existing
-Root `AGENTS.md` and the `context/` docs hold the conventions; ESLint runs through `npm run lint`. code in `AGENTS.md`, `context/`, `eslint.config.mjs`
+Root `AGENTS.md` and the `context/` docs hold the conventions; ESLint runs through `npm run lint`. Tests run through Vitest with Testing Library (`npm test`, unit tests beside the source) and Playwright (`npm run test:e2e`, in `e2e/`). code in `AGENTS.md`, `context/`, `eslint.config.mjs`, `vitest.config.mts`, `playwright.config.ts`
 
 ### 3. Design system · existing
 Dark only token palette in `globals.css` mapped to Tailwind classes, plus the base shadcn components. Built from `context/feature-specs/01-design-system.md`. code in `app/globals.css`, `components/ui/`
@@ -57,6 +59,21 @@ Relational records every later slice builds on: projects with a single owner, co
 Catch runtime errors in the app and in background AI runs, so failures in generation are visible from day one.
 **Done when:** an error thrown in a route, a page, or a background run shows up in one place with enough context to trace it.
 - [ ] Design it (spec): `/architect error monitoring`
+
+### 20. Dark 404 page · done
+Unknown URLs show a dark Ghost AI page with a link back to the editor instead of the default Next.js 404. Signed out visitors still go to sign in.
+**Done when:** a signed in user on an unknown URL gets a 404 status and the dark page, and "Back to editor" opens `/editor`.
+- [x] Design it (spec): `/factory` job 001 spec writer
+- [x] Build it: `/factory` job 001 builder
+- [x] Verify it: `/check verify dark 404 page`
+- [x] Test it: `/test dark 404 page`
+- [x] Review it: `/check review` (docs/reviews/2026-10-10-worktree-test-not-found-page.md)
+Spec `context/feature-specs/04-dark-not-found-page.md` · code in `app/not-found.tsx`
+
+### 21. Editor shell polish
+Small fixes to the existing editor shell: greet the user by first name in place of the "Canvas" placeholder, toggle the project sidebar with Cmd/Ctrl + B, and make button icons in the sidebar and navbar render at the `h-5 w-5` size they ask for (the `size-4` rule in `buttonVariants` shrinks them to 16px).
+**Done when:** `/editor` shows "Welcome back, <first name>", Cmd/Ctrl + B opens and closes the sidebar, and those button icons measure 20px.
+- [ ] Build it: `/develop editor shell polish` (or one `/factory` job per item)
 
 ## Slice 1: Core loop (walking skeleton)
 
