@@ -143,7 +143,9 @@ Git refuses to check out a branch that another worktree already has, so first fi
 where `$MERGE` lives:
 
 ```bash
-HOLDER=$(git worktree list --porcelain | awk -v b="branch refs/heads/$MERGE" '/^worktree /{w=substr($0,10)} $0==b{print w}')
+# porcelain lists "worktree <path>", "HEAD <sha>", "branch <ref>" per entry.
+# No awk on purpose: skill args are substituted for positional vars, which breaks awk's field syntax.
+HOLDER=$(git worktree list --porcelain | grep -B2 -x "branch refs/heads/$MERGE" | sed -n 's/^worktree //p')
 ```
 
 - **`$HOLDER` empty** (nobody has `$MERGE` checked out): merge in the job worktree.
