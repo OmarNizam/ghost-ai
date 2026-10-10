@@ -26,4 +26,5 @@ Write `spec.md` in this shape:
     ## Acceptance criteria
     - [ ] AC1 ... (each one checkable: a command, a route + expected result, or a code fact)
     - [ ] `npm run lint` and `npm run build` pass
+    - [ ] Spec copied to `context/feature-specs/NN-<slug>.md` and a line added to `context/progress-tracker.md`
     ## Notes           (conventions from AGENTS.md / context/ that apply)
