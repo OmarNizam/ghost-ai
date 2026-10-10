@@ -16,6 +16,8 @@ test.describe("unknown URL, signed out", () => {
     await page.goto(UNKNOWN_PATH);
 
     await page.waitForURL((url) => url.pathname.startsWith("/sign-in"));
+    // Wait for Clerk's form to render so the absence check runs against a settled page.
+    await expect(page.getByRole("heading", { name: /sign in/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Page not found" })).toHaveCount(0);
   });
 });
