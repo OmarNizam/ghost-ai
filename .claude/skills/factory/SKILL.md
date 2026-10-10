@@ -152,12 +152,15 @@ HOLDER=$(git worktree list --porcelain | grep -B2 -x "branch refs/heads/$MERGE" 
   ```bash
   cd "$WT" && git switch "$MERGE" && git merge --no-ff "factory/<job-id>" -m "factory: merge <job-id>"
   ```
-- **`$HOLDER` set and clean** (`git -C "$HOLDER" status --porcelain` prints nothing):
-  merge there. A clean tree with no conflicts is safe to merge into.
+- **`$HOLDER` set and clean**: merge there. A clean tree with no conflicts is safe to
+  merge into. "Clean" ignores `factory/` (your own board, backlog, and job files, which
+  are always dirty mid-run) and untracked files. If the merge would overwrite one of
+  those, git refuses before touching anything; treat that like a conflict.
   ```bash
+  git -C "$HOLDER" status --porcelain --untracked-files=no -- . ':(exclude)factory'  # must print nothing
   git -C "$HOLDER" merge --no-ff "factory/<job-id>" -m "factory: merge <job-id>"
   ```
-- **`$HOLDER` has uncommitted changes**: don't touch it. Set `needs-human` with
+- **`$HOLDER` has uncommitted changes** (that check prints anything): don't touch it. Set `needs-human` with
   `note: "$MERGE is checked out at $HOLDER with uncommitted changes"`. The user commits
   or switches, then runs `/factory approve <job-id>`.
 
