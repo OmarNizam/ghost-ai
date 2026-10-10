@@ -33,14 +33,18 @@ Open http://localhost:3000. You'll be redirected to `/sign-in`. Once you've sign
 
 ## Scripts
 
-| Command         | What it does                     |
-| --------------- | -------------------------------- |
-| `npm run dev`   | Start the dev server on `:3000`  |
-| `npm run build` | Production build                 |
-| `npm run start` | Serve the production build       |
-| `npm run lint`  | Run ESLint                       |
+| Command            | What it does                                                 |
+| ------------------ | ------------------------------------------------------------ |
+| `npm run dev`      | Start the dev server on `:3000`                              |
+| `npm run build`    | Production build                                             |
+| `npm run start`    | Serve the production build                                   |
+| `npm run lint`     | Run ESLint                                                   |
+| `npm test`         | Run the Vitest unit tests                                    |
+| `npm run test:e2e` | Run the Playwright browser tests (builds and serves `:3100`) |
 
-There is no test suite yet. Before opening a PR, run `npx tsc --noEmit`, `npm run lint` and `npm run build`.
+Before opening a PR, run `npx tsc --noEmit`, `npm run lint`, `npm test` and `npm run build`.
+
+Browser tests need `npx playwright install chromium` once. The signed in browser tests are skipped unless `E2E_CLERK_USER_EMAIL` in `.env.local` names an existing Clerk user.
 
 ## What works today
 

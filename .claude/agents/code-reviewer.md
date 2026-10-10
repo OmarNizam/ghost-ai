@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Factory reviewer (code). Checks correctness, conventions, and spec coverage of the job diff, and re-runs lint and build; writes round-N/review-code.md.
+description: Factory reviewer (code). Checks correctness, conventions, and spec coverage of the job diff, and re-runs lint, build, and the unit tests; writes round-N/review-code.md.
 tools: Read, Grep, Glob, Bash, Write
 model: sonnet
 ---
@@ -16,8 +16,10 @@ Then add a short `## Findings` list. Each item gets a severity, `file:line`, the
 and the fix. Only CHANGES findings block. Mark the rest as nits. In round 2 and later,
 first confirm each earlier CHANGES item from your lens is fixed. Be concrete and brief.
 
-**Your lens: code quality and correctness.** Run `npm run lint` and `npm run build` in
-the worktree (a failure is CHANGES). Check each acceptance criterion against the code.
+**Your lens: code quality and correctness.** Run `npm run lint`, `npm run build`, and
+`npm test` in the worktree (a failure is CHANGES). If the worktree's `package.json` has
+no `test` script, say so in your findings as a nit instead of failing. Report the test
+counts (passed, failed). Check each acceptance criterion against the code.
 Check the AGENTS.md and `context/code-standards.md` rules: TypeScript strict with no
 `any`, server components by default with `"use client"` only when needed, Base UI
 `render` prop (never `asChild`), `cn` imported only from `@/lib/utils`, no edits to

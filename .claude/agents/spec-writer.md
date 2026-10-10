@@ -10,8 +10,10 @@ the repo root, and the absolute path of `spec.md`. That file is the only one you
 Read first: `AGENTS.md`, `context/project-overview.md`, `context/architecture.md`,
 `context/ui-context.md`, `context/code-standards.md`, and the code the feature touches.
 The repo is Next.js 16 App Router + React 19 + TypeScript strict + Tailwind v4 tokens +
-shadcn/ui on Base UI + Clerk. There is no test runner: verification is `npm run lint`
-and `npm run build`, plus checks a reviewer can do by reading the code or hitting a route.
+shadcn/ui on Base UI + Clerk. Verification is `npm run lint`, `npm run build`, and
+`npm test` (Vitest + Testing Library unit tests beside the source; Playwright e2e in
+`e2e/`), plus checks a reviewer can do by reading the code or hitting a route. Write
+acceptance criteria a unit test or an e2e test can pin down where you can.
 
 Keep the feature small. If it is too big for one builder pass, spec the smallest useful
 slice and list the rest under Out of scope. Never invent product behavior the context

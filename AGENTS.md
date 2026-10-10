@@ -40,10 +40,13 @@ npm install
 npm run dev     # needs .env.local with the Clerk vars below
 npm run build   # must pass before a unit is done
 npm run lint
-# No test runner is set up yet.
+npm test          # Vitest + Testing Library (jsdom); unit tests sit beside the source as *.test.tsx
+npm run test:e2e  # Playwright in e2e/; builds and serves on port 3100
 ```
 
 Required in `.env.local`: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in`, `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up`. `proxy.ts` throws on startup if either URL var is missing.
+
+E2E needs `npx playwright install chromium` once. Signed in e2e tests are skipped unless `E2E_CLERK_USER_EMAIL` (in `.env.local`) names an existing Clerk user; the dev instance has `e2e+clerk_test@example.com`.
 
 ## Rules
 
@@ -57,3 +60,7 @@ Required in `.env.local`: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY
 - [clerk-nextjs-patterns](.agents/skills/clerk-nextjs-patterns/): `clerk/skills`, proxy, Server Actions, caching with Clerk
 - [clerk-custom-ui](.agents/skills/clerk-custom-ui/): `clerk/skills`, appearance and custom auth flows
 - [clerk-setup](.agents/skills/clerk-setup/), [clerk-cli](.agents/skills/clerk-cli/), [clerk-backend-api](.agents/skills/clerk-backend-api/): `clerk/skills`, setup, CLI, Backend API
+- [clerk-testing](.agents/skills/clerk-testing/): `clerk/skills`, Playwright sign in helpers and testing tokens for the e2e suite
+- [playwright-best-practices](.agents/skills/playwright-best-practices/): `currents-dev/playwright-best-practices-skill`, writing and debugging Playwright e2e tests
+- [vitest](.agents/skills/vitest/): `antfu/skills`, Vitest config, mocking, and test patterns
+- MCP servers: Playwright MCP `@playwright/mcp` (recommended)
